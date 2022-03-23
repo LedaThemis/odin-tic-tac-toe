@@ -54,6 +54,8 @@ const game = (() => {
   let _currentPlayer = playerX;
   displayController.render(gameBoard.getBoard());
 
+  let finished = false;
+
   const getCurrentPlayer = () => _currentPlayer;
   const updateCurrentPlayer = () => {
     _currentPlayer = _currentPlayer.type === "X" ? playerO : playerX;
@@ -61,9 +63,20 @@ const game = (() => {
 
   const play = (index) => {
     if (gameBoard.getBoard()[index] !== " ") return;
+    if (finished) return;
     _currentPlayer.play(index);
     displayController.render(gameBoard.getBoard());
-    console.log(checkIfWon(gameBoard.getBoard(), _currentPlayer.type));
+
+    if (checkIfWon(gameBoard.getBoard(), _currentPlayer.type)) {
+      alert(`${_currentPlayer.type} won, congrats!`);
+      finished = true;
+      return;
+    }
+    if (gameBoard.getBoard().every((e) => e !== " ")) {
+      alert(`It's a tie, well played!`);
+      finished = true;
+      return;
+    }
     updateCurrentPlayer();
   };
 
@@ -79,8 +92,8 @@ const game = (() => {
       if (multipleEqual(i, i + 3, i + 6)) return true;
     }
 
-    if (multipleEqual(0, 4, 6)) return true;
-    if (multipleEqual(2, 6, 8)) return true;
+    if (multipleEqual(0, 4, 8)) return true;
+    if (multipleEqual(2, 4, 6)) return true;
 
     return false;
   };
