@@ -1,0 +1,23 @@
+html {
+  font-family: Poppins, sans-serif;
+}
+
+#main-container {
+  display: grid;
+  place-items: center;
+}
+
+#game-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  width: 50vh;
+  height: 50vh;
+
+  border: 1px solid black;
+}
+
+#game-container > div {
+  border: 1px solid black;
+}
