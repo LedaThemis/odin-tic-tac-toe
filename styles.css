@@ -19,5 +19,14 @@ html {
 }
 
 #game-container > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   border: 1px solid black;
+}
+
+p {
+  font-size: 6rem;
+  margin: 0;
 }
