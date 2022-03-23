@@ -4,6 +4,7 @@ const Player = (type) => {
   };
 
   return {
+    type,
     play,
   };
 };
@@ -42,6 +43,24 @@ const displayController = (() => {
   };
   return {
     render,
+  };
+})();
+
+const game = (() => {
+  const playerX = Player("X");
+  const playerO = Player("O");
+  let _currentPlayer = playerX;
+
+  const getCurrentPlayer = () => _currentPlayer;
+  const updateCurrentPlayer = () => {
+    _currentPlayer = _currentPlayer.type === "X" ? playerO : playerX;
+  };
+
+  const play = () => {};
+
+  return {
+    getCurrentPlayer,
+    updateCurrentPlayer,
   };
 })();
 
