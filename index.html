@@ -32,7 +32,13 @@
             <button id="submit-player-names" type="button">SUBMIT</button>
         </form>
         <div>
-            <p id="game-status">STATUS: NOT STARTED</p>
+            <div id="game-top-row">
+                <p id="game-status">STATUS: NOT STARTED</p>
+                <div>
+                    <label for="play-vs-ai">Make Second Player AI?</label>
+                    <input id="play-vs-ai" name="play-vs-ai" type="checkbox">
+                </div>
+            </div>
             <div id="game-container">
             </div>
             <button id="start-button" type="button">START</button>

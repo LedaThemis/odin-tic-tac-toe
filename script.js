@@ -1,4 +1,5 @@
 const Player = (name, type) => {
+  let _AI = false;
   let _name = name;
   this.setName = (newName) => {
     _name = newName;
@@ -11,11 +12,23 @@ const Player = (name, type) => {
     gameBoard.updateBoard(position, type);
   };
 
+  this.makeAI = () => {
+    _AI = true;
+  };
+
+  this.makeHuman = () => {
+    _AI = false;
+  };
+
+  this.isAI = () => _AI;
   return {
     setName,
     getName,
     type,
     play,
+    makeAI,
+    makeHuman,
+    isAI,
   };
 };
 
@@ -30,7 +43,6 @@ const gameBoard = (() => {
   const getBoard = () => _board;
   const clearBoard = () => {
     _board = [..._initialBoard];
-    console.log(_board);
   };
 
   return {
@@ -99,19 +111,26 @@ const game = (() => {
   const playerX = Player("Player 1", "X");
   const playerO = Player("Player 2", "O");
   let _currentPlayer = playerX;
+
+  let finished = false;
+  let started = false;
+
   displayController.render(gameBoard.getBoard());
 
   const updatePlayers = (firstPlayerName, secondPlayerName) => {
     playerX.setName(firstPlayerName);
     playerO.setName(secondPlayerName);
-  };
 
-  let finished = false;
-  let started = false;
+    displayController.updatePlayerDisplay(playerX.getName(), playerO.getName());
+  };
 
   const getCurrentPlayer = () => _currentPlayer;
   const updateCurrentPlayer = () => {
     _currentPlayer = _currentPlayer.type === "X" ? playerO : playerX;
+
+    if (_currentPlayer.isAI()) {
+      play(computerEngine.play(gameBoard.getBoard()));
+    }
   };
 
   const start = (e) => {
@@ -126,6 +145,7 @@ const game = (() => {
     displayController.render(gameBoard.getBoard());
     displayController.clearDisplayResult();
     finished = false;
+    _currentPlayer = playerX;
   };
 
   const play = (index) => {
@@ -149,6 +169,14 @@ const game = (() => {
       return;
     }
     updateCurrentPlayer();
+  };
+
+  const handlePlayAI = (e) => {
+    if (e.target.checked) {
+      playerO.makeAI();
+    } else {
+      playerO.makeHuman();
+    }
   };
 
   const checkIfWon = (board, type) => {
@@ -176,6 +204,7 @@ const game = (() => {
     play,
     getCurrentPlayer,
     updateCurrentPlayer,
+    handlePlayAI,
   };
 })();
 
@@ -186,7 +215,6 @@ const preGame = (() => {
     const firstPlayer = formData.get("player1");
     const secondPlayer = formData.get("player2");
 
-    displayController.updatePlayerDisplay(firstPlayer, secondPlayer);
     displayController.hideForm();
     game.updatePlayers(firstPlayer, secondPlayer);
   };
@@ -195,6 +223,28 @@ const preGame = (() => {
     handleSubmit,
   };
 })();
+
+const computerEngine = (() => {
+  const play = (board) => {
+    let noAnswer = true;
+    let randomIndex = null;
+    while (noAnswer) {
+      randomIndex = _getRandomIndex(board.length);
+      if (board[randomIndex] === " ") {
+        noAnswer = false;
+        break;
+      }
+    }
+    return randomIndex;
+  };
+
+  const _getRandomIndex = (length) => Math.floor(Math.random() * length);
+
+  return {
+    play,
+  };
+})();
+
 const button = document.querySelector("#submit-player-names");
 button.addEventListener("click", (e) => preGame.handleSubmit(e));
 
@@ -203,3 +253,6 @@ startButton.addEventListener("click", game.start);
 
 const restartButton = document.querySelector("#restart-button");
 restartButton.addEventListener("click", game.restart);
+
+const playAI = document.querySelector("#play-vs-ai");
+playAI.addEventListener("click", game.handlePlayAI);
