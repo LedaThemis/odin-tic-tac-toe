@@ -174,6 +174,9 @@ const game = (() => {
   const handlePlayAI = (e) => {
     if (e.target.checked) {
       playerO.makeAI();
+      if (_currentPlayer.isAI()) {
+        play(computerEngine.play(gameBoard.getBoard()));
+      }
     } else {
       playerO.makeHuman();
     }
