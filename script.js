@@ -20,17 +20,23 @@ const Player = (name, type) => {
 };
 
 const gameBoard = (() => {
-  let _board = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+  let _initialBoard = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+  let _board = [..._initialBoard];
 
   const updateBoard = (position, choice) => {
     _board = _board.map((el, i) => (i === position ? choice : el));
   };
 
   const getBoard = () => _board;
+  const clearBoard = () => {
+    _board = [..._initialBoard];
+    console.log(_board);
+  };
 
   return {
-    updateBoard: updateBoard,
-    getBoard: getBoard,
+    updateBoard,
+    getBoard,
+    clearBoard,
   };
 })();
 
@@ -40,6 +46,7 @@ const displayController = (() => {
     div.dataset.key = index;
     div.addEventListener("click", (e) => game.play(index));
     const p = document.createElement("p");
+    p.classList.add("x-or-o");
     p.textContent = type;
     div.appendChild(p);
     return div;
@@ -90,6 +97,19 @@ const game = (() => {
     _currentPlayer = _currentPlayer.type === "X" ? playerO : playerX;
   };
 
+  const start = (e) => {
+    const statusElement = document.querySelector("#game-status");
+    statusElement.textContent = "STATUS: STARTED";
+    started = true;
+  };
+
+  const restart = (e) => {
+    start();
+    gameBoard.clearBoard();
+    displayController.render(gameBoard.getBoard());
+    finished = false;
+  };
+
   const play = (index) => {
     if (gameBoard.getBoard()[index] !== " ") return;
     if (finished) return;
@@ -97,8 +117,6 @@ const game = (() => {
 
     _currentPlayer.play(index);
     displayController.render(gameBoard.getBoard());
-    console.log(playerX.getName());
-    console.log(playerO.getName());
 
     if (checkIfWon(gameBoard.getBoard(), _currentPlayer.type)) {
       alert(`${_currentPlayer.getName()} won, congrats!`);
@@ -131,7 +149,14 @@ const game = (() => {
     return false;
   };
 
-  return { updatePlayers, play, getCurrentPlayer, updateCurrentPlayer };
+  return {
+    start,
+    restart,
+    updatePlayers,
+    play,
+    getCurrentPlayer,
+    updateCurrentPlayer,
+  };
 })();
 
 const preGame = (() => {
@@ -152,3 +177,9 @@ const preGame = (() => {
 })();
 const button = document.querySelector("#submit-player-names");
 button.addEventListener("click", (e) => preGame.handleSubmit(e));
+
+const startButton = document.querySelector("#start-button");
+startButton.addEventListener("click", game.start);
+
+const restartButton = document.querySelector("#restart-button");
+restartButton.addEventListener("click", game.restart);

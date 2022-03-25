@@ -37,7 +37,11 @@ body {
   border: 1px solid black;
 }
 
-p {
+#game-status {
+  margin: 0;
+}
+
+.x-or-o {
   font-size: 6rem;
   margin: 0;
 }
