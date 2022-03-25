@@ -58,8 +58,11 @@ body {
   justify-content: center;
   align-items: center;
 }
-
-#players {
+#results {
+  text-align: center;
+}
+#players,
+#result-display {
   font-size: 1rem;
   font-weight: bold;
 }

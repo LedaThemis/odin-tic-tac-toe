@@ -66,6 +66,16 @@ const displayController = (() => {
     players.textContent = `${p1} vs ${p2}!`;
   };
 
+  const displayResult = (result) => {
+    const players = document.querySelector("#result-display");
+    players.textContent = result;
+  };
+
+  const clearDisplayResult = () => {
+    const players = document.querySelector("#result-display");
+    players.textContent = "";
+  };
+
   const hideForm = () => {
     form = document.querySelector("#form");
     form.style.display = "none";
@@ -75,7 +85,14 @@ const displayController = (() => {
     form.style.display = "";
   };
 
-  return { showForm, hideForm, updatePlayerDisplay, render };
+  return {
+    clearDisplayResult,
+    displayResult,
+    showForm,
+    hideForm,
+    updatePlayerDisplay,
+    render,
+  };
 })();
 
 const game = (() => {
@@ -107,6 +124,7 @@ const game = (() => {
     start();
     gameBoard.clearBoard();
     displayController.render(gameBoard.getBoard());
+    displayController.clearDisplayResult();
     finished = false;
   };
 
@@ -119,12 +137,14 @@ const game = (() => {
     displayController.render(gameBoard.getBoard());
 
     if (checkIfWon(gameBoard.getBoard(), _currentPlayer.type)) {
-      alert(`${_currentPlayer.getName()} won, congrats!`);
+      displayController.displayResult(
+        `${_currentPlayer.getName()} won, congrats!`
+      );
       finished = true;
       return;
     }
     if (gameBoard.getBoard().every((e) => e !== " ")) {
-      alert(`It's a tie, well played!`);
+      displayController.displayResult(`It's a tie, well played!`);
       finished = true;
       return;
     }
