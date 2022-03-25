@@ -2,9 +2,20 @@ html {
   font-family: Poppins, sans-serif;
 }
 
+body {
+  margin: 0;
+}
+
 #main-container {
   display: grid;
   place-items: center;
+  gap: 2rem;
+
+  margin: 2rem;
+}
+
+#game-title {
+  margin: 0;
 }
 
 #game-container {
@@ -29,4 +40,22 @@ html {
 p {
   font-size: 6rem;
   margin: 0;
+}
+
+#form {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+#form > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#players {
+  font-size: 1rem;
+  font-weight: bold;
 }

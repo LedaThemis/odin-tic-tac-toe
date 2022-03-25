@@ -1,9 +1,19 @@
-const Player = (type) => {
+const Player = (name, type) => {
+  let _name = name;
+  this.setName = (newName) => {
+    _name = newName;
+  };
+  this.getName = () => {
+    return _name;
+  };
+
   this.play = (position) => {
     gameBoard.updateBoard(position, type);
   };
 
   return {
+    setName,
+    getName,
     type,
     play,
   };
@@ -43,18 +53,37 @@ const displayController = (() => {
       gameContainer.appendChild(_createDiv(board[i], i));
     }
   };
-  return {
-    render,
+
+  const updatePlayerDisplay = (p1, p2) => {
+    const players = document.querySelector("#players");
+    players.textContent = `${p1} vs ${p2}!`;
   };
+
+  const hideForm = () => {
+    form = document.querySelector("#form");
+    form.style.display = "none";
+  };
+  const showForm = () => {
+    form = document.querySelector("#form");
+    form.style.display = "";
+  };
+
+  return { showForm, hideForm, updatePlayerDisplay, render };
 })();
 
 const game = (() => {
-  const playerX = Player("X");
-  const playerO = Player("O");
+  const playerX = Player("Player 1", "X");
+  const playerO = Player("Player 2", "O");
   let _currentPlayer = playerX;
   displayController.render(gameBoard.getBoard());
 
+  const updatePlayers = (firstPlayerName, secondPlayerName) => {
+    playerX.setName(firstPlayerName);
+    playerO.setName(secondPlayerName);
+  };
+
   let finished = false;
+  let started = false;
 
   const getCurrentPlayer = () => _currentPlayer;
   const updateCurrentPlayer = () => {
@@ -64,11 +93,15 @@ const game = (() => {
   const play = (index) => {
     if (gameBoard.getBoard()[index] !== " ") return;
     if (finished) return;
+    if (!started) return;
+
     _currentPlayer.play(index);
     displayController.render(gameBoard.getBoard());
+    console.log(playerX.getName());
+    console.log(playerO.getName());
 
     if (checkIfWon(gameBoard.getBoard(), _currentPlayer.type)) {
-      alert(`${_currentPlayer.type} won, congrats!`);
+      alert(`${_currentPlayer.getName()} won, congrats!`);
       finished = true;
       return;
     }
@@ -98,9 +131,24 @@ const game = (() => {
     return false;
   };
 
+  return { updatePlayers, play, getCurrentPlayer, updateCurrentPlayer };
+})();
+
+const preGame = (() => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(document.querySelector("#form"));
+    const firstPlayer = formData.get("player1");
+    const secondPlayer = formData.get("player2");
+
+    displayController.updatePlayerDisplay(firstPlayer, secondPlayer);
+    displayController.hideForm();
+    game.updatePlayers(firstPlayer, secondPlayer);
+  };
+
   return {
-    play,
-    getCurrentPlayer,
-    updateCurrentPlayer,
+    handleSubmit,
   };
 })();
+const button = document.querySelector("#submit-player-names");
+button.addEventListener("click", (e) => preGame.handleSubmit(e));
