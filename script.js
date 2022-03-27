@@ -281,7 +281,6 @@ const computerEngine = (() => {
 
       const score = minimax(computedBoard, 0, false);
 
-      console.log(score);
       if (score > bestScore) {
         bestMove = i;
         bestScore = score;
