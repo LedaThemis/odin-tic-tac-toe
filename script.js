@@ -208,6 +208,7 @@ const game = (() => {
     getCurrentPlayer,
     updateCurrentPlayer,
     handlePlayAI,
+    checkIfWon,
   };
 })();
 
@@ -228,6 +229,34 @@ const preGame = (() => {
 })();
 
 const computerEngine = (() => {
+  const _values = {
+    Win: 8,
+    "Block Win": 7,
+    Fork: 6,
+    "Block Fork": 5,
+    Center: 4,
+    "Opposite Corner": 3,
+    Corner: 2,
+    Side: 1,
+  };
+  const _aboutToWin = [
+    [0, 1],
+    [1, 2],
+    [3, 4],
+    [4, 5],
+    [6, 7],
+    [7, 8],
+    [0, 4],
+    [4, 8],
+    [2, 4],
+    [4, 6],
+    [0, 2],
+    [3, 5],
+    [6, 8],
+    [0, 8],
+    [2, 6],
+  ];
+
   const play = (board) => {
     let noAnswer = true;
     let randomIndex = null;
@@ -238,10 +267,67 @@ const computerEngine = (() => {
         break;
       }
     }
+    console.log(findBestMove(board));
     return randomIndex;
   };
 
+  const findBestMove = (board) => {
+    let bestScore = -Infinity;
+
+    for (let i = 0; i < board.length; i++) {
+      if (board[i] !== " ") continue;
+      const computedBoard = _computeBoard(board, i, "O");
+
+      const score = minimax(computedBoard, 0, false);
+
+      if (score > bestScore) {
+        console.log(score);
+        bestMove = i;
+        bestScore = score;
+        console.log(bestMove, bestScore);
+      }
+    }
+    return bestMove;
+  };
+
+  const minimax = (board, depth, maximizingPlayer) => {
+    if (board.every((e) => e !== " ")) {
+      if (game.checkIfWon(board, "X")) {
+        return -10;
+      } else if (game.checkIfWon(board, "O")) {
+        return 10;
+      } else {
+        return 0;
+      }
+    }
+    const possiblePositions = [];
+    board.forEach((e, i) => (e === " " ? possiblePositions.push(i) : null));
+
+    if (maximizingPlayer) {
+      let maxEval = -Infinity;
+      for (const pos of possiblePositions) {
+        const childBoard = _computeBoard(board, pos, "O");
+        const val = minimax(childBoard, depth + 1, false);
+
+        maxEval = Math.max(val + depth, maxEval);
+      }
+      return maxEval;
+    } else {
+      let minEval = Infinity;
+      for (const pos of possiblePositions) {
+        const childBoard = _computeBoard(board, pos, "X");
+        const val = minimax(childBoard, depth + 1, true);
+
+        minEval = Math.min(val + depth, minEval);
+      }
+      return minEval;
+    }
+  };
+
+  const _getRemainingMoves = (board) => board.filter((e) => e === " ").length;
   const _getRandomIndex = (length) => Math.floor(Math.random() * length);
+  const _computeBoard = (board, position, type) =>
+    board.map((el, i) => (i === position ? type : el));
 
   return {
     play,
